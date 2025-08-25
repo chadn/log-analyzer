@@ -2,10 +2,10 @@
 
 * Options for **1 person, a couple, or 2 individuals in own rooms**  
 * **Rent:**  
-  * $1350/month \+ bills (\~$135 each) – [*Balcony bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.vowlap9aq7cd)*, 4 roommates total*  
-  * $1900/month \+ bills (\~$135 each) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 4 roommates total*  
-  * $2800/month \+ bills (\~$135 each) – *Couple in [primary bedroom](#primary-bedroom), 4 roommates total*  
-  * $2500/month \+ bills (\~$180) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 3 roommates total*  
+  * \$1350/month \+ bills (\~$135 each) – [*Balcony bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.vowlap9aq7cd)*, 4 roommates total*  
+  * \$1900/month \+ bills (\~$135 each) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 4 roommates total*  
+  * \$2800/month \+ bills (\~$135 each) – *Couple in [primary bedroom](#primary-bedroom), 4 roommates total*  
+  * \$2500/month \+ bills (\~$180) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 3 roommates total*  
 * **Utilities:** Water, internet, PG\&E split evenly  
 * **Move-in:** Sept 1 (flexible)  
 * **Deposit:** One month’s rent  
@@ -100,13 +100,13 @@ Above is Bedroom with Balcony,  [View All House Photos](https://photos.app.goo.g
 
 ## **What We’re Looking For**
 
-✅ All ages, genders, ethnicities, sexual orientations, and backgrounds welcome. Financially secure (background check required, able to pay rent \+ deposit)  
-✅ We welcome and encourage applications from people of all backgrounds, identities, and life experiences  
-✅ Respectful (keep shared spaces clean, communicate about guests - partners, friends, family all welcome with notice, treat others' time & stuff with care)  
-✅ Good communicator  
-✅ Comfortable with occasional gatherings  
-✅ Active lifestyle a plus (hiking, biking, DJs, dancing, good food)  
-🚫 No pets, no smoking (per lease)
+✅ **Everyone welcome** – All ages, genders, ethnicities, sexual orientations, and backgrounds. We encourage applications from people of all identities and life experiences  
+✅ **Financially responsible** – Able to pay rent + deposit, pass background check  
+✅ **Respectful housemate** – Keep shared spaces clean, communicate about guests (partners, friends, family all welcome with notice), treat others' time & belongings with care  
+✅ **Good communicator** – Open, honest, and considerate in house discussions  
+✅ **Social but balanced** – Comfortable with occasional gatherings while respecting quiet time  
+✅ **Active lifestyle appreciated** – Hiking, biking, DJs, dancing, good food (not required, but a plus!)  
+🚫 **House rules** – No pets, no smoking (per lease terms)
 
 ---
 
