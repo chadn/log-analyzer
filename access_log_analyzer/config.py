@@ -16,14 +16,10 @@ class Settings(BaseSettings):
 
     # Log settings
     logs_dir: str = Field(default="logs", description="Directory containing log files")
-    max_log_entries: int = Field(
-        default=85000, description="Maximum log entries to process"
-    )
+    max_log_entries: int = Field(default=85000, description="Maximum log entries to process")
 
     # Display settings
-    default_ip_limit: int = Field(
-        default=20, description="Default number of top IPs to show"
-    )
+    default_ip_limit: int = Field(default=20, description="Default number of top IPs to show")
 
 
 settings = Settings()

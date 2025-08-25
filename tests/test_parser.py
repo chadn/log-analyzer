@@ -53,10 +53,7 @@ class TestLogParser:
     def test_parse_browser_firefox(self) -> None:
         """Test browser parsing for Firefox."""
         parser = LogParser()
-        ua = (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) "
-            "Gecko/20100101 Firefox/89.0"
-        )
+        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"
 
         browser = parser._parse_browser(ua)
 

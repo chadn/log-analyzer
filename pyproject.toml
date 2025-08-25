@@ -37,7 +37,7 @@ log-analyzer = "access_log_analyzer.main:cli"
 
 [tool.ruff]
 target-version = "py311"
-line-length = 88
+line-length = 120
 
 [tool.ruff.lint]
 select = [

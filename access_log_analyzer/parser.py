@@ -1,10 +1,13 @@
 """Log file parsing functionality."""
 
+import logging
 import re
 from datetime import datetime
 from pathlib import Path
 
 from .models import LogEntry
+
+logger = logging.getLogger(__name__)
 
 # Apache/Nginx common log format regex
 LOG_PATTERN = re.compile(
@@ -130,16 +133,23 @@ class LogParser:
         entries = []
         log_files = self.find_log_files()
 
+        logger.info(f"Found {len(log_files)} log files in {self.logs_dir}")
+
         for log_file in log_files:
-            entries.extend(self._parse_single_file(log_file, max_entries))
+            file_entries = self._parse_single_file(log_file, max_entries)
+            entries.extend(file_entries)
+            logger.info(f"Parsed {len(file_entries)} entries from {log_file.name}")
+
             if max_entries and len(entries) >= max_entries:
+                logger.info(f"Reached max entries limit ({max_entries}), stopping parsing")
                 break
+
+        final_count = len(entries[:max_entries]) if max_entries else len(entries)
+        logger.info(f"Successfully parsed {final_count} total log entries")
 
         return entries[:max_entries] if max_entries else entries
 
-    def _parse_single_file(
-        self, log_file: Path, max_entries: int | None = None
-    ) -> list[LogEntry]:
+    def _parse_single_file(self, log_file: Path, max_entries: int | None = None) -> list[LogEntry]:
         """Parse a single log file.
 
         Args:
@@ -162,6 +172,6 @@ class LogParser:
                         entry.source_file = log_file.name
                         entries.append(entry)
         except Exception as e:
-            print(f"Error reading {log_file}: {e}")
+            logger.error(f"Error reading {log_file}: {e}", exc_info=True)
 
         return entries

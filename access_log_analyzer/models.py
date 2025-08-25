@@ -11,9 +11,7 @@ class LogEntry(BaseModel):
 
     ip: str = Field(description="Client IP address")
     timestamp: str = Field(description="Raw timestamp from log")
-    parsed_datetime: datetime = Field(
-        description="Parsed datetime object", alias="datetime"
-    )
+    parsed_datetime: datetime = Field(description="Parsed datetime object", alias="datetime")
     method: str = Field(description="HTTP method")
     path: str = Field(description="Request path")
     protocol: str = Field(description="HTTP protocol version")
@@ -53,7 +51,7 @@ class BrowserData(BaseModel):
 
 class FilterParams(BaseModel):
     """Filter parameters for log analysis."""
-    
+
     date: str | None = Field(None, description="Filter by specific date (YYYY-MM-DD)")
     hour: int | None = Field(None, description="Filter by specific hour (0-23)")
     ip: str | None = Field(None, description="Filter by specific IP address")

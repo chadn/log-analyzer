@@ -222,10 +222,10 @@ class TestLogAnalyzer:
         # Check specific hours that should have data
         hour_8_index = result.dates.index(8)
         hour_14_index = result.dates.index(14)
-        
+
         assert result.counts[hour_8_index] == 2  # Two entries at hour 8
         assert result.counts[hour_14_index] == 2  # Two entries at hour 14 (different days, same hour)
-        
+
         # Check that unused hours have 0 count
         hour_0_index = result.dates.index(0)
         assert result.counts[hour_0_index] == 0

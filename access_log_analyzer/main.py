@@ -1,7 +1,9 @@
 """Main FastAPI application for the access log analyzer."""
 
 import json
+import logging
 
+import pandas as pd
 import plotly
 import plotly.express as px
 from fastapi import FastAPI, Request
@@ -13,6 +15,13 @@ from .analyzer import LogAnalyzer
 from .config import settings
 from .models import FilterParams, LogEntry, LogSummary
 from .parser import LogParser
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO if not settings.debug else logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Access Log Analyzer", version="0.1.0")
 
@@ -39,17 +48,17 @@ async def startup_event() -> None:
     """Load logs on startup."""
     global _log_entries
     _log_entries = load_logs()
-    print(f"Loaded {len(_log_entries)} log entries")
+    logger.info(f"Loaded {len(_log_entries)} log entries from {settings.logs_dir}")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(
-    request: Request, 
+    request: Request,
     granularity: str = "hourly",
     date: str | None = None,
     hour: int | None = None,
     ip: str | None = None,
-    browser: str | None = None
+    browser: str | None = None,
 ) -> HTMLResponse:
     """Main dashboard page.
 
@@ -85,7 +94,7 @@ async def dashboard(
     traffic_data = filtered_analyzer.get_traffic_over_time(actual_granularity)
     ip_data = filtered_analyzer.get_ip_frequency(settings.default_ip_limit)
     browser_data = filtered_analyzer.get_browser_stats()
-    
+
     # Create filter description
     filter_parts = []
     if filters.date:
@@ -96,34 +105,32 @@ async def dashboard(
         filter_parts.append(f"IP: {filters.ip}")
     if filters.browser:
         filter_parts.append(f"Browser: {filters.browser}")
-    
-    filter_description = "Showing " + (
-        ", ".join(filter_parts) if filter_parts else "all data"
-    )
 
-    # Debug what data is being passed to chart
-    if granularity == "hourly":
-        print(f"DEBUG CHART: dates={traffic_data.dates[:10]}...")
-        print(f"DEBUG CHART: counts={traffic_data.counts[:10]}...")
-        print(f"DEBUG CHART: len(dates)={len(traffic_data.dates)}, len(counts)={len(traffic_data.counts)}")
+    filter_description = "Showing " + (", ".join(filter_parts) if filter_parts else "all data")
+
+    # Log filtering activity for debugging if needed
+    if filter_parts:
+        logger.debug(f"Applying filters: {filter_description}")
+        logger.debug(f"Filtered from {len(_log_entries)} to {len(filtered_entries)} entries")
+
+    logger.debug(f"Generating {actual_granularity} traffic chart with {len(traffic_data.dates)} data points")
 
     # Create Plotly figures using proper DataFrame API for version 6.3.0
-    import pandas as pd
-    
+
     # Traffic chart
-    traffic_df = pd.DataFrame({
-        'time': traffic_data.dates,
-        'count': traffic_data.counts
-    })
+    traffic_df = pd.DataFrame({"time": traffic_data.dates, "count": traffic_data.counts})
     fig1 = px.bar(
         traffic_df,
-        x='time',
-        y='count',
+        x="time",
+        y="count",
         title=traffic_data.title,
-        labels={"time": "Hour" if granularity == "hourly" else "Date", "count": "Request Count"},
+        labels={
+            "time": "Hour" if granularity == "hourly" else "Date",
+            "count": "Request Count",
+        },
     )
     fig1.update_layout(showlegend=False)
-    
+
     # Format x-axis for hourly data
     if granularity == "hourly":
         fig1.update_xaxes(
@@ -132,18 +139,15 @@ async def dashboard(
             dtick=2,  # Show every 2 hours
             tickformat="d",  # Show as integers
             title="Hour of Day",
-            range=[-0.5, 23.5]  # Ensure all hours 0-23 are visible
+            range=[-0.5, 23.5],  # Ensure all hours 0-23 are visible
         )
 
     # IP frequency chart
-    ip_df = pd.DataFrame({
-        'ip': ip_data.ips,
-        'count': ip_data.counts
-    })
+    ip_df = pd.DataFrame({"ip": ip_data.ips, "count": ip_data.counts})
     fig2 = px.bar(
         ip_df,
-        x='count',
-        y='ip',
+        x="count",
+        y="ip",
         orientation="h",
         title=ip_data.title,
         labels={"count": "Request Count", "ip": "IP Address"},
@@ -153,18 +157,20 @@ async def dashboard(
     fig2.update_layout(
         yaxis={"categoryorder": "total ascending"},
         height=ip_chart_height,
-        margin=dict(l=150, r=50, t=50, b=50)  # Increase left margin for IP labels
+        margin={
+            "l": 150,
+            "r": 50,
+            "t": 50,
+            "b": 50,
+        },  # Increase left margin for IP labels
     )
 
     # Browser distribution chart
-    browser_df = pd.DataFrame({
-        'browser': browser_data.browsers,
-        'count': browser_data.counts
-    })
+    browser_df = pd.DataFrame({"browser": browser_data.browsers, "count": browser_data.counts})
     fig3 = px.pie(
         browser_df,
-        values='count',
-        names='browser',
+        values="count",
+        names="browser",
         title=browser_data.title,
     )
 
@@ -202,6 +208,8 @@ async def get_logs_data() -> LogSummary:
         unique_ips=len({entry.ip for entry in _log_entries}),
         date_range=_get_date_range(),
         files_processed=list({entry.source_file for entry in _log_entries}),
+        active_filters=FilterParams(date=None, hour=None, ip=None, browser=None),
+        filter_description="Showing all data",
     )
 
 
@@ -219,7 +227,7 @@ async def refresh_logs() -> dict[str, str]:
 
 def _get_date_range(entries: list[LogEntry] | None = None) -> str:
     """Get the date range of loaded logs.
-    
+
     Args:
         entries: Log entries to analyze, defaults to global entries
 
@@ -228,7 +236,7 @@ def _get_date_range(entries: list[LogEntry] | None = None) -> str:
     """
     if entries is None:
         entries = _log_entries
-        
+
     if not entries:
         return "No data"
 
