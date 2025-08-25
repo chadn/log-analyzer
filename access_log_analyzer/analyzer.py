@@ -30,23 +30,35 @@ class LogAnalyzer:
         if not self.log_entries:
             return TrafficData(dates=[], counts=[], title="No data available")
 
-        # Convert to pandas DataFrame for easier manipulation
-        df = pd.DataFrame([entry.model_dump(by_alias=True) for entry in self.log_entries])
-
         if granularity == "hourly":
-            df["time_bucket"] = pd.to_datetime(df["datetime"]).dt.floor("h")
+            # Extract hours directly from parsed datetime objects
+            hours = [entry.parsed_datetime.hour for entry in self.log_entries]
+            df_hours = pd.DataFrame({"hour": hours})
+            traffic = df_hours.groupby("hour").size().reset_index(name="count")
+            # Ensure all hours 0-23 are represented
+            all_hours = pd.DataFrame({"hour": range(24)})
+            traffic = all_hours.merge(traffic, on="hour", how="left").fillna(0)
+            traffic["count"] = traffic["count"].astype(int)
             title = "Traffic by Hour"
         else:  # daily
+            # Convert to pandas DataFrame for easier manipulation
+            df = pd.DataFrame([entry.model_dump(by_alias=True) for entry in self.log_entries])
             df["time_bucket"] = pd.to_datetime(df["datetime"]).dt.date
+            traffic = df.groupby("time_bucket").size().reset_index(name="count")
             title = "Traffic by Day"
 
-        traffic = df.groupby("time_bucket").size().reset_index(name="count")
-
-        return TrafficData(
-            dates=traffic["time_bucket"].tolist(),
-            counts=traffic["count"].tolist(),
-            title=title,
-        )
+        if granularity == "hourly":
+            return TrafficData(
+                dates=traffic["hour"].tolist(),
+                counts=traffic["count"].tolist(),
+                title=title,
+            )
+        else:
+            return TrafficData(
+                dates=traffic["time_bucket"].tolist(),
+                counts=traffic["count"].tolist(),
+                title=title,
+            )
 
     def get_ip_frequency(self, top_n: int = 20) -> IPData:
         """Generate IP address frequency data.

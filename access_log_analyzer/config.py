@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     # Log settings
     logs_dir: str = Field(default="logs", description="Directory containing log files")
     max_log_entries: int = Field(
-        default=10000, description="Maximum log entries to process"
+        default=85000, description="Maximum log entries to process"
     )
 
     # Display settings

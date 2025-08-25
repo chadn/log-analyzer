@@ -1,16 +1,16 @@
 # AI Agent Project Template Guide
 
 This file provides project-level guidance to AI LLMs (Cursor, Claude Code, GitHub Copilot, etc.) when working with code in this repository.
-
-This template is designed to work with both Node.js/TypeScript and Python projects. Customize the sections below for your specific project needs.
+Also follow the user level guidelines in ~/.config/AGENT.md
 
 ## Project Overview
 
-Project purpose is to understand 
-- access log files from apache / nginx
-- best python packages to accomplish task
+Project purpose is to understand
 
- Reference README.md for complete details.
+-   access log files from apache / nginx
+-   best python packages to accomplish task
+
+Reference README.md for complete details.
 
 ## General Project Preferences
 
@@ -65,6 +65,12 @@ Use the following for python projects, node projects (javascript or typescript),
 
 -   Avoid unnecessary dependencies; prefer stdlib / core libraries first.
 -   Justify adding external packages.
+-   Use latest stable versions, avoid dev or short lived versions.
+
+### Troubleshooting
+
+-   When dependencies are not acting as expected, confirm version actually installed, then
+    read docs for that version and confirm code follows docs.
 
 ## Python Projects
 

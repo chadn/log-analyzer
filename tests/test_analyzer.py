@@ -150,3 +150,141 @@ class TestLogAnalyzer:
         assert "Chrome" in result.browsers
         assert "Firefox" in result.browsers
         assert result.title == "Browser Usage Distribution"
+
+    def test_get_traffic_over_time_hourly(self) -> None:
+        """Test hourly traffic analysis with sample data."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:08:15:30 -0700",
+                datetime=datetime(2025, 7, 31, 8, 15, 30),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="31/Jul/2025:08:45:22 -0700",
+                datetime=datetime(2025, 7, 31, 8, 45, 22),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.3",
+                timestamp="31/Jul/2025:14:22:11 -0700",
+                datetime=datetime(2025, 7, 31, 14, 22, 11),
+                method="GET",
+                path="/api",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="512",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.4",
+                timestamp="01/Aug/2025:14:33:44 -0700",
+                datetime=datetime(2025, 8, 1, 14, 33, 44),
+                method="GET",
+                path="/data",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1536",
+                referer="",
+                user_agent="Safari",
+                browser="Safari",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        result = analyzer.get_traffic_over_time(granularity="hourly")
+
+        assert result.title == "Traffic by Hour"
+        assert len(result.dates) == 24  # All hours 0-23 should be present
+        assert len(result.counts) == 24
+
+        # Check specific hours that should have data
+        hour_8_index = result.dates.index(8)
+        hour_14_index = result.dates.index(14)
+        
+        assert result.counts[hour_8_index] == 2  # Two entries at hour 8
+        assert result.counts[hour_14_index] == 2  # Two entries at hour 14 (different days, same hour)
+        
+        # Check that unused hours have 0 count
+        hour_0_index = result.dates.index(0)
+        assert result.counts[hour_0_index] == 0
+
+    def test_get_traffic_over_time_daily(self) -> None:
+        """Test daily traffic analysis with sample data."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:08:15:30 -0700",
+                datetime=datetime(2025, 7, 31, 8, 15, 30),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="31/Jul/2025:14:22:11 -0700",
+                datetime=datetime(2025, 7, 31, 14, 22, 11),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.3",
+                timestamp="01/Aug/2025:09:33:44 -0700",
+                datetime=datetime(2025, 8, 1, 9, 33, 44),
+                method="GET",
+                path="/api",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="512",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        result = analyzer.get_traffic_over_time(granularity="daily")
+
+        assert result.title == "Traffic by Day"
+        assert len(result.dates) == 2  # Two different days
+        assert len(result.counts) == 2
+
+        # Should have 2 entries for July 31 and 1 for August 1
+        # Note: dates should be in chronological order
+        assert result.counts[0] == 2  # July 31
+        assert result.counts[1] == 1  # August 1

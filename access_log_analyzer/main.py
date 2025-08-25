@@ -60,27 +60,64 @@ async def dashboard(request: Request, granularity: str = "hourly") -> HTMLRespon
     ip_data = analyzer.get_ip_frequency(settings.default_ip_limit)
     browser_data = analyzer.get_browser_stats()
 
-    # Create Plotly figures
-    fig1 = px.line(
-        x=traffic_data.dates,
-        y=traffic_data.counts,
+    # Debug what data is being passed to chart
+    if granularity == "hourly":
+        print(f"DEBUG CHART: dates={traffic_data.dates[:10]}...")
+        print(f"DEBUG CHART: counts={traffic_data.counts[:10]}...")
+        print(f"DEBUG CHART: len(dates)={len(traffic_data.dates)}, len(counts)={len(traffic_data.counts)}")
+
+    # Create Plotly figures using proper DataFrame API for version 6.3.0
+    import pandas as pd
+    
+    # Traffic chart
+    traffic_df = pd.DataFrame({
+        'time': traffic_data.dates,
+        'count': traffic_data.counts
+    })
+    fig1 = px.bar(
+        traffic_df,
+        x='time',
+        y='count',
         title=traffic_data.title,
-        labels={"x": "Time", "y": "Request Count"},
+        labels={"time": "Hour" if granularity == "hourly" else "Date", "count": "Request Count"},
     )
     fig1.update_layout(showlegend=False)
+    
+    # Format x-axis for hourly data
+    if granularity == "hourly":
+        fig1.update_xaxes(
+            tickmode="linear",
+            tick0=0,
+            dtick=2,  # Show every 2 hours
+            tickformat="d",  # Show as integers
+            title="Hour of Day",
+            range=[-0.5, 23.5]  # Ensure all hours 0-23 are visible
+        )
 
+    # IP frequency chart
+    ip_df = pd.DataFrame({
+        'ip': ip_data.ips,
+        'count': ip_data.counts
+    })
     fig2 = px.bar(
-        x=ip_data.counts,
-        y=ip_data.ips,
+        ip_df,
+        x='count',
+        y='ip',
         orientation="h",
         title=ip_data.title,
-        labels={"x": "Request Count", "y": "IP Address"},
+        labels={"count": "Request Count", "ip": "IP Address"},
     )
     fig2.update_layout(yaxis={"categoryorder": "total ascending"})
 
+    # Browser distribution chart
+    browser_df = pd.DataFrame({
+        'browser': browser_data.browsers,
+        'count': browser_data.counts
+    })
     fig3 = px.pie(
-        values=browser_data.counts,
-        names=browser_data.browsers,
+        browser_df,
+        values='count',
+        names='browser',
         title=browser_data.title,
     )
 

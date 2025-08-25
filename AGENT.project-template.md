@@ -1,7 +1,7 @@
 # AI Agent Project Template Guide
 
 This file provides project-level guidance to AI LLMs (Cursor, Claude Code, GitHub Copilot, etc.) when working with code in this repository.
-Create symlinks to AGENT.md depending on which LLMs you use. For examples, see https://ampcode.com/AGENT.md
+Also follow the user level guidelines in ~/.config/AGENT.md
 
 This template is designed to work with both Node.js/TypeScript and Python projects. Customize the sections below for your specific project needs.
 
@@ -32,8 +32,6 @@ If python, below delete Node Projects
 ## General Project Preferences
 
 Use the following for python projects, node projects (javascript or typescript), etc.
-
-Create `.gitignore` 
 
 ### CI/CD
 
@@ -84,6 +82,12 @@ Create `.gitignore`
 
 -   Avoid unnecessary dependencies; prefer stdlib / core libraries first.
 -   Justify adding external packages.
+-   Use latest stable versions, avoid dev or short lived versions.
+
+### Troubleshooting
+
+-   When dependencies are not acting as expected, confirm version actually installed, then
+    read docs for that version and confirm code follows docs.
 
 ## Python Projects
 
@@ -198,6 +202,8 @@ hooks: ## Install pre-commit hooks
 -   Type hints required.
 -   Follow PEP 8.
 -   Enforce via Ruff and CI.
+
+Create `.gitignore` based off of https://github.com/chadn/ai-chatbot-meetings/blob/main/.gitignore
 
 ## Node Projects
 
