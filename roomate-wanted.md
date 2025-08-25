@@ -1,15 +1,16 @@
 ## **Quick Details**
 
-* Options for **1 person, a couple, or 2 individuals in own rooms)**  
+* Options for **1 person, a couple, or 2 individuals in own rooms**  
 * **Rent:**  
-  * $2500/month \+ bills (\~$180) – [*Primary bedroom*](#primary-bedroom)*, 3 roommates total*  
+  * $1350/month \+ bills (\~$135 each) – [*Balcony bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.vowlap9aq7cd)*, 4 roommates total*  
+  * $1900/month \+ bills (\~$135 each) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 4 roommates total*  
   * $2800/month \+ bills (\~$135 each) – *Couple in [primary bedroom](#primary-bedroom), 4 roommates total*  
-  * $1900/month \+ bills (\~$135 each) – [*Primary bedroom*](#primary-bedroom)*, 4 roommates total*  
-  * $1350/month \+ bills (\~$135 each) – [*Balcony bedroom*](#bedroom-with-balcony-\(only-if-4-total-roommates\))*, 4 roommates total*  
+  * $2500/month \+ bills (\~$180) – [*Primary bedroom*](https://docs.google.com/document/d/1w7f6Ms5fgaAzcEbH3lgkoG2WEqNZB_BDpfStQCzMqhQ/edit?fbclid=IwY2xjawMVxyFleHRuA2FlbQIxMABicmlkETFKblVna2pQRm83cW9RNXlDAR45EtNfL0ePRXt-TOmAIipmzW-uRGEthf23s4As8mHvHjCdZcwRSRohnlxV1Q_aem_Oldk0AJKQLomnrhh-N3H4Q&tab=t.0#heading=h.x0e0v3ujgvzt)*, 3 roommates total*  
 * **Utilities:** Water, internet, PG\&E split evenly  
 * **Move-in:** Sept 1 (flexible)  
 * **Deposit:** One month’s rent  
-* **Lease:** month to month, ideally 9-month commitment
+* **Lease:** month to month, ideally 9-month commitment  
+* **Furnished:** Rooms available unfurnished or furnished for short-term renters
 
 ---
 
@@ -38,7 +39,7 @@
 ![][image1]  
 Above is Primary Bedroom,  [View All House Photos](https://photos.app.goo.gl/i1ddhJcYNHat9c6s9) 
 
-## **Bedroom with Balcony (Only if 4 total roommates)** {#bedroom-with-balcony-(only-if-4-total-roommates)}
+## **Bedroom with Balcony (Only if 4 total roommates)**
 
 * About **160 sq ft** (11' x 13' including 2' x 8' closet)  
 * Closet with mirrored sliding door  
@@ -93,14 +94,15 @@ Above is Bedroom with Balcony,  [View All House Photos](https://photos.app.goo.g
 
 **Chad** – Software engineer/manager working from home. Enjoys hiking, cycling, good food, dancing to DJ friends, and socializing.
 
-**Social Vibe:** Respectful, social but not overwhelming. Occasional gatherings (about 3 small parties last year, plus smaller get-togethers & sound healing events). Always give advance notice. Looking for someone comfortable with this dynamic.
+**Social Vibe:** Respectful, social but not overwhelming. Occasional gatherings (about 3 small parties last year, plus smaller get-togethers & sound healing events). Always give advance notice. We value diversity, mutual respect, and creating an inclusive home environment where everyone feels welcome and safe to be themselves. We're also open to new activities and interests like art, music, or communal living arrangements. Looking for someone comfortable with this dynamic.
 
 ---
 
 ## **What We’re Looking For**
 
-✅ Financially secure (background check required, able to pay rent \+ deposit)  
-✅ Respectful (keep shared spaces clean, communicate about guests, treat others’ time & stuff with care)  
+✅ All ages, genders, ethnicities, sexual orientations, and backgrounds welcome. Financially secure (background check required, able to pay rent \+ deposit)  
+✅ We welcome and encourage applications from people of all backgrounds, identities, and life experiences  
+✅ Respectful (keep shared spaces clean, communicate about guests - partners, friends, family all welcome with notice, treat others' time & stuff with care)  
 ✅ Good communicator  
 ✅ Comfortable with occasional gatherings  
 ✅ Active lifestyle a plus (hiking, biking, DJs, dancing, good food)  
@@ -125,7 +127,8 @@ Above is Bedroom with Balcony,  [View All House Photos](https://photos.app.goo.g
 
 * 📧 Email: [chad@chadnorwood.com](mailto:chad@chadnorwood.com) or text 773-234-7757  
   * Subject: `Bedroom For Rent in Claremont Hills / Oakland Hills`  
-  * Mention which room option(s) you’re interested in  
+  * Mention which room option(s) you're interested in  
+  * All inquiries welcome regardless of background, identity, or family structure  
 * 📅 Move-in: Sept 1 preferred (flexible)  
 * 🔗 Share this listing: [chadnorwood.com/rental](https://chadnorwood.com/rental)
 
