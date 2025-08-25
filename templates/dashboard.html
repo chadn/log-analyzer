@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Log Analyzer Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>🔍 Access Log Analyzer</h1>
+        <div class="stats">
+            <div class="stat-item">
+                <strong>Total Requests:</strong> {{ total_requests }}
+            </div>
+            <div class="stat-item">
+                <strong>Unique IPs:</strong> {{ unique_ips }}
+            </div>
+            <div class="stat-item">
+                <strong>Date Range:</strong> {{ date_range }}
+            </div>
+        </div>
+    </header>
+
+    <nav class="controls">
+        <div class="control-group">
+            <label for="granularity">Time Granularity:</label>
+            <select id="granularity" onchange="changeGranularity()">
+                <option value="hourly" {% if granularity == 'hourly' %}selected{% endif %}>Hourly</option>
+                <option value="daily" {% if granularity == 'daily' %}selected{% endif %}>Daily</option>
+            </select>
+        </div>
+        
+        <button onclick="refreshData()" class="refresh-btn">🔄 Refresh Data</button>
+    </nav>
+
+    <main class="dashboard">
+        <section class="chart-container">
+            <div id="traffic-chart" class="chart"></div>
+        </section>
+
+        <section class="chart-row">
+            <div class="chart-container half">
+                <div id="ip-chart" class="chart"></div>
+            </div>
+            <div class="chart-container half">
+                <div id="browser-chart" class="chart"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Access Log Analyzer powered by FastAPI & Plotly</p>
+        <div class="api-links">
+            <a href="/api/logs" target="_blank">📊 Raw Data API</a>
+            <a href="/api/refresh" target="_blank">🔄 Refresh API</a>
+        </div>
+    </footer>
+
+    <script>
+        // Graph data from backend
+        const graphData = {
+            traffic: {{ graphs.traffic | safe }},
+            ips: {{ graphs.ips | safe }},
+            browsers: {{ graphs.browsers | safe }}
+        };
+
+        // Render all charts
+        function renderCharts() {
+            // Traffic over time chart
+            Plotly.newPlot('traffic-chart', graphData.traffic.data, 
+                          graphData.traffic.layout, {responsive: true});
+
+            // IP frequency chart
+            Plotly.newPlot('ip-chart', graphData.ips.data, 
+                          graphData.ips.layout, {responsive: true});
+
+            // Browser distribution chart
+            Plotly.newPlot('browser-chart', graphData.browsers.data, 
+                          graphData.browsers.layout, {responsive: true});
+        }
+
+        // Change time granularity
+        function changeGranularity() {
+            const granularity = document.getElementById('granularity').value;
+            const url = new URL(window.location);
+            url.searchParams.set('granularity', granularity);
+            window.location.href = url.toString();
+        }
+
+        // Refresh data
+        async function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            const originalText = refreshBtn.textContent;
+            
+            refreshBtn.textContent = '⏳ Refreshing...';
+            refreshBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/refresh');
+                const result = await response.json();
+                
+                // Show success message briefly
+                refreshBtn.textContent = '✅ Refreshed!';
+                setTimeout(() => {
+                    // Reload page to get new data
+                    window.location.reload();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                refreshBtn.textContent = '❌ Error';
+                setTimeout(() => {
+                    refreshBtn.textContent = originalText;
+                    refreshBtn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCharts();
+            
+            // Make charts responsive to window resize
+            window.addEventListener('resize', function() {
+                Plotly.Plots.resize('traffic-chart');
+                Plotly.Plots.resize('ip-chart');
+                Plotly.Plots.resize('browser-chart');
+            });
+        });
+
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for API links
+            document.querySelectorAll('.api-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href.includes('/refresh')) {
+                        e.preventDefault();
+                        refreshData();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

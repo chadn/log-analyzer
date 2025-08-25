@@ -1,6 +1,7 @@
 # AI Agent Project Template Guide
 
 This file provides project-level guidance to AI LLMs (Cursor, Claude Code, GitHub Copilot, etc.) when working with code in this repository.
+Create symlinks to AGENT.md depending on which LLMs you use. For examples, see https://ampcode.com/AGENT.md
 
 This template is designed to work with both Node.js/TypeScript and Python projects. Customize the sections below for your specific project needs.
 
@@ -31,6 +32,8 @@ If python, below delete Node Projects
 ## General Project Preferences
 
 Use the following for python projects, node projects (javascript or typescript), etc.
+
+Create `.gitignore` 
 
 ### CI/CD
 
