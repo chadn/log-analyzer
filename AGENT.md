@@ -4,29 +4,13 @@ This file provides project-level guidance to AI LLMs (Cursor, Claude Code, GitHu
 
 This template is designed to work with both Node.js/TypeScript and Python projects. Customize the sections below for your specific project needs.
 
-## Setup Instructions
-
-**REMOVE THIS Setup Instructions SECTION** after customizing for your project.
-
-Based on community best practices from https://ampcode.com/AGENT.md
-
-Create symbolic links for AI tool compatibility:
-
-```bash
-cp ~/.config/AGENT.project-template.md AGENT.md
-ln -s AGENT.md CLAUDE.md
-ln -s AGENT.md .cursorrules
-mkdir -p .github/instructions/ && ln -s ../../AGENT.md .github/instructions/chadn.instructions.md  # Github Copilot
-```
-
 ## Project Overview
 
-**[CUSTOMIZE THIS SECTION]**
+Project purpose is to understand 
+- access log files from apache / nginx
+- best python packages to accomplish task
 
-Brief description of project purpose, architecture, and key technologies. Reference README.md for complete details.
-
-If node project, below delete Python Projects  
-If python, below delete Node Projects
+ Reference README.md for complete details.
 
 ## General Project Preferences
 
@@ -195,31 +179,6 @@ hooks: ## Install pre-commit hooks
 -   Type hints required.
 -   Follow PEP 8.
 -   Enforce via Ruff and CI.
-
-## Node Projects
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run lint         # Run linter
-npm test             # Run tests
-```
-
-### Code style for TypeScript/JavaScript
-
--   2 spaces indentation
--   120 character line limit
--   Single quotes, no semicolons, trailing commas
--   Use TypeScript strict mode
--   NEVER use `@ts-ignore` without strong justification
--   Use JSDoc docstrings for documenting TypeScript definitions, not `//` comments
--   Imports: Use consistent-type-imports
--   Prefer functional programming patterns
--   Use TypeScript interfaces for public APIs
-
-### Testing
-
--   **Node.js**: Use Vitest(preferred) or Jest for unit tests; Playwright for E2E
 
 ## Project-Specific Notes
 
