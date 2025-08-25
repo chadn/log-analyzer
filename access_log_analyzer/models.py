@@ -51,6 +51,15 @@ class BrowserData(BaseModel):
     title: str = Field(description="Chart title")
 
 
+class FilterParams(BaseModel):
+    """Filter parameters for log analysis."""
+    
+    date: str | None = Field(None, description="Filter by specific date (YYYY-MM-DD)")
+    hour: int | None = Field(None, description="Filter by specific hour (0-23)")
+    ip: str | None = Field(None, description="Filter by specific IP address")
+    browser: str | None = Field(None, description="Filter by specific browser")
+
+
 class LogSummary(BaseModel):
     """Summary of log analysis."""
 
@@ -58,3 +67,5 @@ class LogSummary(BaseModel):
     unique_ips: int = Field(description="Number of unique IP addresses")
     date_range: str | None = Field(description="Date range of logs")
     files_processed: list[str] = Field(description="List of processed log files")
+    active_filters: FilterParams = Field(description="Currently active filters")
+    filter_description: str = Field(description="Human-readable filter description")

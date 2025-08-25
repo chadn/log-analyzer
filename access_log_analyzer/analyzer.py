@@ -4,7 +4,7 @@ from collections import Counter
 
 import pandas as pd
 
-from .models import BrowserData, IPData, LogEntry, TrafficData
+from .models import BrowserData, FilterParams, IPData, LogEntry, TrafficData
 
 
 class LogAnalyzer:
@@ -17,6 +17,48 @@ class LogAnalyzer:
             log_entries: List of parsed log entries
         """
         self.log_entries = log_entries
+
+    def apply_filters(self, filters: FilterParams) -> list[LogEntry]:
+        """Apply filters to log entries.
+        
+        Args:
+            filters: Filter parameters
+            
+        Returns:
+            Filtered log entries
+        """
+        filtered_entries = self.log_entries
+        
+        if filters.date:
+            try:
+                from datetime import datetime
+                target_date = datetime.strptime(filters.date, "%Y-%m-%d").date()
+                filtered_entries = [
+                    entry for entry in filtered_entries 
+                    if entry.parsed_datetime.date() == target_date
+                ]
+            except ValueError:
+                pass  # Invalid date format, skip filter
+                
+        if filters.hour is not None:
+            filtered_entries = [
+                entry for entry in filtered_entries 
+                if entry.parsed_datetime.hour == filters.hour
+            ]
+            
+        if filters.ip:
+            filtered_entries = [
+                entry for entry in filtered_entries 
+                if entry.ip == filters.ip
+            ]
+            
+        if filters.browser:
+            filtered_entries = [
+                entry for entry in filtered_entries 
+                if entry.browser == filters.browser
+            ]
+            
+        return filtered_entries
 
     def get_traffic_over_time(self, granularity: str = "hourly") -> TrafficData:
         """Generate traffic over time data.

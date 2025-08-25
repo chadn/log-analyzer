@@ -45,6 +45,43 @@ header h1 {
     font-size: 0.9rem;
 }
 
+/* Filter Status */
+.filter-status {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #fef5e7;
+    border-radius: 8px;
+    border-left: 4px solid #f6ad55;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-text {
+    font-weight: 600;
+    color: #c05621;
+}
+
+.clear-filters-btn {
+    background: #f56565;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.clear-filters-btn:hover {
+    background: #e53e3e;
+    transform: translateY(-1px);
+}
+
 /* Navigation Controls */
 .controls {
     display: flex;

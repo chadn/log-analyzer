@@ -21,6 +21,12 @@
                 <strong>Date Range:</strong> {{ date_range }}
             </div>
         </div>
+        {% if filter_description != "Showing all data" %}
+        <div class="filter-status">
+            <span class="filter-text">{{ filter_description }}</span>
+            <button onclick="clearFilters()" class="clear-filters-btn">✖ Clear Filters</button>
+        </div>
+        {% endif %}
     </header>
 
     <nav class="controls">
@@ -65,6 +71,10 @@
             ips: {{ graphs.ips | safe }},
             browsers: {{ graphs.browsers | safe }}
         };
+        
+        // Active filters from backend
+        const activeFilters = {{ active_filters | tojson }};
+        const currentGranularity = "{{ granularity }}";
 
         // Render all charts
         function renderCharts() {
@@ -79,6 +89,68 @@
             // Browser distribution chart
             Plotly.newPlot('browser-chart', graphData.browsers.data, 
                           graphData.browsers.layout, {responsive: true});
+                          
+            // Add click event listeners
+            addClickHandlers();
+        }
+        
+        // Add click handlers for interactive filtering
+        function addClickHandlers() {
+            // Traffic chart click handler
+            document.getElementById('traffic-chart').on('plotly_click', function(data) {
+                const point = data.points[0];
+                if (currentGranularity === 'hourly') {
+                    // Filter by hour
+                    applyFilter('hour', point.x);
+                } else {
+                    // Filter by date
+                    applyFilter('date', point.x);
+                }
+            });
+            
+            // IP chart click handler
+            document.getElementById('ip-chart').on('plotly_click', function(data) {
+                const point = data.points[0];
+                applyFilter('ip', point.y);
+            });
+            
+            // Browser chart click handler
+            document.getElementById('browser-chart').on('plotly_click', function(data) {
+                const point = data.points[0];
+                applyFilter('browser', point.label);
+            });
+        }
+        
+        // Apply a filter and reload page
+        function applyFilter(filterType, filterValue) {
+            const url = new URL(window.location);
+            
+            // Clear existing filters of the same type
+            url.searchParams.delete(filterType);
+            
+            // When applying time-based filters, remove granularity to let backend decide
+            if (filterType === 'date' || filterType === 'hour') {
+                url.searchParams.delete('granularity');
+            }
+            
+            // Add new filter
+            if (filterType === 'date' && typeof filterValue !== 'string') {
+                // Convert date object to string if needed
+                filterValue = new Date(filterValue).toISOString().split('T')[0];
+            }
+            url.searchParams.set(filterType, filterValue);
+            
+            window.location.href = url.toString();
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            const url = new URL(window.location);
+            url.searchParams.delete('date');
+            url.searchParams.delete('hour');
+            url.searchParams.delete('ip');
+            url.searchParams.delete('browser');
+            window.location.href = url.toString();
         }
 
         // Change time granularity

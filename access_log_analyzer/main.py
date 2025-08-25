@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 from .analyzer import LogAnalyzer
 from .config import settings
-from .models import LogEntry, LogSummary
+from .models import FilterParams, LogEntry, LogSummary
 from .parser import LogParser
 
 app = FastAPI(title="Access Log Analyzer", version="0.1.0")
@@ -43,22 +43,63 @@ async def startup_event() -> None:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def dashboard(request: Request, granularity: str = "hourly") -> HTMLResponse:
+async def dashboard(
+    request: Request, 
+    granularity: str = "hourly",
+    date: str | None = None,
+    hour: int | None = None,
+    ip: str | None = None,
+    browser: str | None = None
+) -> HTMLResponse:
     """Main dashboard page.
 
     Args:
         request: FastAPI request object
         granularity: Time granularity for traffic chart ('hourly' or 'daily')
+        date: Filter by specific date
+        hour: Filter by specific hour
+        ip: Filter by specific IP
+        browser: Filter by specific browser
 
     Returns:
         HTML response with dashboard
     """
+    # Apply filters
+    filters = FilterParams(date=date, hour=hour, ip=ip, browser=browser)
     analyzer = LogAnalyzer(_log_entries)
+    filtered_entries = analyzer.apply_filters(filters)
+    filtered_analyzer = LogAnalyzer(filtered_entries)
 
-    # Generate all the plots
-    traffic_data = analyzer.get_traffic_over_time(granularity)
-    ip_data = analyzer.get_ip_frequency(settings.default_ip_limit)
-    browser_data = analyzer.get_browser_stats()
+    # Determine granularity based on filters
+    if filters.date and not filters.hour:
+        # If filtering by date but not hour, show hourly breakdown
+        actual_granularity = "hourly"
+    elif filters.hour is not None and not filters.date:
+        # If filtering by hour but not date, show daily breakdown
+        actual_granularity = "daily"
+    else:
+        # Otherwise use requested granularity
+        actual_granularity = granularity
+
+    # Generate all the plots using filtered data
+    traffic_data = filtered_analyzer.get_traffic_over_time(actual_granularity)
+    ip_data = filtered_analyzer.get_ip_frequency(settings.default_ip_limit)
+    browser_data = filtered_analyzer.get_browser_stats()
+    
+    # Create filter description
+    filter_parts = []
+    if filters.date:
+        filter_parts.append(f"Date: {filters.date}")
+    if filters.hour is not None:
+        filter_parts.append(f"Hour: {filters.hour}")
+    if filters.ip:
+        filter_parts.append(f"IP: {filters.ip}")
+    if filters.browser:
+        filter_parts.append(f"Browser: {filters.browser}")
+    
+    filter_description = "Showing " + (
+        ", ".join(filter_parts) if filter_parts else "all data"
+    )
 
     # Debug what data is being passed to chart
     if granularity == "hourly":
@@ -107,7 +148,13 @@ async def dashboard(request: Request, granularity: str = "hourly") -> HTMLRespon
         title=ip_data.title,
         labels={"count": "Request Count", "ip": "IP Address"},
     )
-    fig2.update_layout(yaxis={"categoryorder": "total ascending"})
+    # Calculate height based on number of IPs (minimum 400px, 25px per IP)
+    ip_chart_height = max(400, len(ip_data.ips) * 25)
+    fig2.update_layout(
+        yaxis={"categoryorder": "total ascending"},
+        height=ip_chart_height,
+        margin=dict(l=150, r=50, t=50, b=50)  # Increase left margin for IP labels
+    )
 
     # Browser distribution chart
     browser_df = pd.DataFrame({
@@ -133,10 +180,12 @@ async def dashboard(request: Request, granularity: str = "hourly") -> HTMLRespon
         {
             "request": request,
             "graphs": graphs,
-            "granularity": granularity,
-            "total_requests": len(_log_entries),
-            "unique_ips": len({entry.ip for entry in _log_entries}),
-            "date_range": _get_date_range(),
+            "granularity": actual_granularity,
+            "total_requests": len(filtered_entries),
+            "unique_ips": len({entry.ip for entry in filtered_entries}),
+            "date_range": _get_date_range(filtered_entries),
+            "filter_description": filter_description,
+            "active_filters": filters.model_dump(),
         },
     )
 
@@ -168,16 +217,22 @@ async def refresh_logs() -> dict[str, str]:
     return {"message": f"Reloaded {len(_log_entries)} log entries"}
 
 
-def _get_date_range() -> str:
+def _get_date_range(entries: list[LogEntry] | None = None) -> str:
     """Get the date range of loaded logs.
+    
+    Args:
+        entries: Log entries to analyze, defaults to global entries
 
     Returns:
         Date range string or 'No data' if no logs
     """
-    if not _log_entries:
+    if entries is None:
+        entries = _log_entries
+        
+    if not entries:
         return "No data"
 
-    dates = [entry.parsed_datetime.date() for entry in _log_entries]
+    dates = [entry.parsed_datetime.date() for entry in entries]
     return f"{min(dates)} to {max(dates)}"
 
 
