@@ -30,25 +30,66 @@ If python, below delete Node Projects
 
 ## General Project Preferences
 
--   Consider creating `.github/workflows/ci.yml` for GitHub actions CI/CD
-    -   CI must run lint, type check, tests, coverage
--   Config and secrets: Keep a `.env.example` and load only in dev.
--   Versioning: semver + CHANGELOG.md
--   Always add tests for new functionality
--   Mock external dependencies appropriately
--   Security
-    -   Never commit secrets or API keys to repository
-    -   Use environment variables for sensitive data
-    -   Validate all user inputs on both client and server
-    -   Follow principle of least privilege
+Use the following for python projects, node projects (javascript or typescript), etc.
+
+### CI/CD
+
+-   Create `.github/workflows/ci.yml` for GitHub Actions CI/CD.
+-   CI must run: lint, type check, tests, coverage.
+-   CI must fail if coverage < 85% (default; adjust as needed).
+-   Cache dependencies in CI to speed up builds.
+-   Run dependency audit in CI (`pip-audit` for Python, `npm audit` for Node).
+
+### Config and Secrets
+
+-   Use `.env.example` to document required settings with dummy values.
+-   Never commit `.env`.
+-   Load `.env` **only in local development**, never in CI or production.
+-   In CI/prod, rely on injected environment variables.
+
+### Versioning
+
+-   Semantic versioning with `CHANGELOG.md`.
+-   Use Conventional Commits or similar to automate changelog if possible.
+-   Tag releases in git to align with semver and changelog entries.
+
+### Testing
+
+-   Always add tests for new functionality.
+-   All new code must include at least one **fast (<1s) unit test**; add integration/E2E tests if relevant.
+-   Apply the testing pyramid: balance unit, integration, and end-to-end tests.
+-   Mock external dependencies appropriately: stub/mocks for APIs, containers for heavier services.
+-   Consider property-based testing for critical logic.
+-   Structure tests to mirror application code and keep them in dedicated folders.
+
+### Security
+
+-   Never commit secrets or API keys.
+-   Use environment variables for sensitive data.
+-   Validate all user inputs on both client and server.
+-   Follow the principle of least privilege.
+-   Enable pre-commit hooks to catch issues before commit (lint, type checks, audit).
+-   Use secret-scanning (e.g., detect-secrets).
+-   Dependencies must be pinned in lockfiles (`uv.lock`, `package-lock.json`, etc.); review drift in PRs.
+
+### Logging and Errors
+
+-   Use structured logging (JSON or equivalent).
+-   Never swallow exceptions; always log with context.
+
+### Dependencies
+
+-   Avoid unnecessary dependencies; prefer stdlib / core libraries first.
+-   Justify adding external packages.
 
 ## Python Projects
 
--   Environment and dependencies
-    -   Use uv to manage environments & dependencies
-    -   Prefer one pyproject.toml to configure everything (Ruff, pytest, coverage, mypy, build). ex:
+### Python Environment and Dependencies
 
-```
+-   Use `uv` to manage environments and dependencies.
+-   Prefer a single `pyproject.toml` to configure everything (Ruff, pytest, coverage, mypy, build).
+
+```toml
 [project]
 dependencies = ["fastapi", "pydantic"]
 
@@ -56,26 +97,30 @@ dependencies = ["fastapi", "pydantic"]
 dev = ["pytest", "mypy", "ruff", "coverage", "pre-commit"]
 ```
 
--   use Makefile to make it easier. Uses `uv run xxx` to run on linux or windows, and in CI. Ex:
+-   Commit `pyproject.toml` and `uv.lock`.
+-   Only commit `requirements.txt` if infrastructure requires it (generate with `uv pip compile`, not `uv pip freeze`).
 
-```
+### Python Makefile
+
+Use a Makefile for common workflows. All commands run via `uv run` for cross-platform safety (Linux/Windows/CI).
+
+```make
 DEFAULT_GOAL := help
 
-.PHONY: init deps lint format type test check ci
+.PHONY: init deps lint format fix-format type test serve reqs check ci clean hooks
 
 help: ## Show available targets
-   @awk 'BEGIN {FS:=":.*##"; printf "\nTargets:\n"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-
+	@awk 'BEGIN {FS:=":.*##"; printf "\nTargets:\n"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 init: ## Create venv and install dev dependencies
-   uv venv .venv
-   uv pip install -e ".[dev]"
+	uv venv .venv
+	uv pip install -e ".[dev]"
 
 deps: ## Reinstall dev dependencies (no new venv)
-   uv pip install -e ".[dev]"
+	uv pip install -e ".[dev]"
 
-lint:
-   uv run ruff check .
+lint: ## Run lint checks
+	uv run ruff check .
 
 format: ## Verify formatting
 	uv run ruff format --check .
@@ -83,60 +128,73 @@ format: ## Verify formatting
 fix-format: ## Auto-fix formatting
 	uv run ruff format .
 
-type:
-   uv run mypy .
+type: ## Type-check with mypy
+	uv run mypy .
 
 test: ## Run tests (pass extra flags via ARGS='...')
-   uv run pytest -q $(ARGS)
+	uv run pytest -q $(ARGS)
 
 serve: ## Run app locally with hot reload, with APP_DEBUG env overide
 	APP_DEBUG=true uv run uvicorn package_name.api:app --reload --port 8000
 
-reqs: ## Generate requirements.txt from pyproject - use only for legacy tools when needed
-   uv pip compile pyproject.toml -o requirements.txt
+reqs: ## Generate requirements.txt from pyproject (legacy tools only)
+	uv pip compile pyproject.toml -o requirements.txt
 
-check: format lint type test
+check: format lint type test ## Run all local checks
 
-ci: check
-   uv run coverage run -m pytest -q
-   uv run coverage report --fail-under=85
+ci: check ## Run checks + coverage (CI gate)
+	uv run coverage run -m pytest -q
+	uv run coverage report --fail-under=85
 
 clean: ## Remove caches and build artifacts
-   rm -rf .pytest_cache .mypy_cache .ruff_cache .coverage dist build
+	rm -rf .pytest_cache .mypy_cache .ruff_cache .coverage dist build
+
+hooks: ## Install pre-commit hooks
+	uv run pre-commit install
 ```
 
--   commmit pyproject.toml and uv.lock, only commit requirements.txt if infrastructure requires it.
--   Typing and Linting
-    -   use [Ruff](https://github.com/astral-sh/ruff) for formatting AND linting code
-    -   Ruff enforces most of PEP8 + formatting, no need to run Black separately.
-    -   Use docstrings in Google style, enforced by Ruff D rules.
-    -   Optional: pydantic for runtime validation where API/IO boundaries exist.
-    -   use pyright for basic or simple projects, OR use mypy + plugins for CI, advanced, or larger projects (FastAPI/Pydantic/SQLAlchemy heavily) or for CI precision
--   use pytest for testing code
-    -   Leverage the testing pyramid to effectively balance unit, integration, and end-to-end tests.
-    -   Structure your tests to mirror application code and separate them cleanly in dedicated folders.
-    -   Maximize Pytest’s flexibility to organize fixtures, manage test data, and control scope with conftest.py.
-    -   use pytest fixtures to provide data, test doubles, or state setup to tests
-    -   use pytest markers to categorize tests if need be (not needed if only a small number of tests that can execute in <1sec)
-    -   Keep integration tests hermetic with pytest-docker or testcontainers when services are needed.
-    -   All new code must have at least one unit test; integration/E2E if relevant.
--   default to using pydantic, but consider alternatives https://developer-service.blog/beyond-pydantic-7-game-changing-libraries-for-python-data-handling/
-    -   Use pydantic at boundaries (config, request/response, parsing external data), not inside your app’s core/domain.
-    -   Prefer dataclasses or attrs for plain in-memory models (lighter, faster, fewer imports).
-    -   For hot (de)serialization paths needing speed, consider msgspec.
--   Security: `uv export | pip-audit -r -` for dependency CVEs
-    -   Enable pre-commit hooks (ruff, mypy, pip-audit) to catch issues before commit.
-    -   Detect-secrets or similar to scan for accidental secrets.
--   Docs
-    -   small projects may need no docs, README only is enough; pdoc/MkDocs optional.
-    -   Suggest ADRs for architecture decisions (lightweight, Markdown, numbered).
-    -   For basic API docs, use pdoc → Minimal, auto-generated API docs from code/docstrings with near-zero config. Great for libraries and internal packages when you just want “read the code, but nicer”.
-    -   For advanced docs, use MkDocs Material → Team docs sites, hand-written guides + API refs, pretty theme, navigation, search, versioned docs, plugins. Great for product-y repos and onboarding.
--   code style
-    -   4 spaces indentation
-    -   88 character line limit (Black standard)
-    -   Type hints required
-    -   Follow PEP 8
+### Python Typing and Linting
+
+-   Use [Ruff](https://github.com/astral-sh/ruff) for linting **and** formatting.
+-   Ruff enforces most of PEP8 + formatting; no need to run Black separately.
+-   Use Google-style docstrings; enforce with Ruff `D` rules.
+-   Pyright → editor feedback (fast, incremental).
+-   Mypy (+ plugins) → CI precision, especially for larger projects or where Pydantic/SQLAlchemy integration matters.
+-   Optional: Pydantic for runtime validation where API/IO boundaries exist.
+
+### Python Testing
+
+-   Use pytest.
+-   Apply the testing pyramid: balance unit, integration, and end-to-end tests.
+-   Structure tests to mirror application code.
+-   Use pytest fixtures for data, test doubles, and setup.
+-   Use pytest markers for categories (no need if entire test suite finishes in <1s).
+-   Keep integration tests hermetic with `pytest-docker` or `testcontainers`.
+
+### Python Config
+
+-   Use `python-dotenv` for local dev.
+-   Use Pydantic Settings v2 to unify env/config.
+-   Guidelines for data models:
+    -   Use Pydantic at boundaries (config, request/response, parsing external data).
+    -   Use `dataclasses` or `attrs` for plain in-memory models (lighter, faster).
+    -   Use `msgspec` for hot (de)serialization paths where performance is critical.
+
+### Python Docs
+
+-   Small projects → README only may be enough.
+-   For team projects, always include a **Quickstart** in README or `docs/`.
+-   Use ADRs (Architecture Decision Records) for major design choices (lightweight, Markdown, numbered, e.g. MADR template).
+-   Basic API docs → `pdoc` (auto-generated from docstrings).
+-   Advanced docs → MkDocs Material (team sites, guides, versioned docs, search).
+
+### Python Code Style
+
+-   4 spaces indentation.
+-   88 character line limit (Black standard).
+-   Type hints required.
+-   Follow PEP 8.
+-   Enforce via Ruff and CI.
 
 ## Node Projects
 
