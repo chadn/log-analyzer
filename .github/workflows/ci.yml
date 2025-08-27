@@ -52,12 +52,6 @@ jobs:
         uv run coverage report --fail-under=85
         uv run coverage xml
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
-
     - name: Run security audit
       run: uv run pip-audit
 
