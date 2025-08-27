@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from access_log_analyzer.analyzer import LogAnalyzer
-from access_log_analyzer.models import LogEntry
+from access_log_analyzer.models import FilterParams, LogEntry
 
 
 class TestLogAnalyzer:
@@ -229,6 +229,232 @@ class TestLogAnalyzer:
         # Check that unused hours have 0 count
         hour_0_index = result.dates.index(0)
         assert result.counts[hour_0_index] == 0
+
+    def test_apply_filters_date_valid(self) -> None:
+        """Test applying a valid date filter."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="01/Aug/2025:17:03:16 -0700",
+                datetime=datetime(2025, 8, 1, 17, 3, 16),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date="2025-07-31", hour=None, ip=None, browser=None)
+        filtered = analyzer.apply_filters(filters)
+
+        assert len(filtered) == 1
+        assert filtered[0].ip == "192.168.1.1"
+
+    def test_apply_filters_date_invalid(self) -> None:
+        """Test applying an invalid date filter (should be ignored)."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date="invalid-date", hour=None, ip=None, browser=None)
+        filtered = analyzer.apply_filters(filters)
+
+        # Invalid date should be ignored, all entries returned
+        assert len(filtered) == 1
+
+    def test_apply_filters_hour(self) -> None:
+        """Test applying an hour filter."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="31/Jul/2025:18:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 18, 3, 16),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date=None, hour=17, ip=None, browser=None)
+        filtered = analyzer.apply_filters(filters)
+
+        assert len(filtered) == 1
+        assert filtered[0].ip == "192.168.1.1"
+
+    def test_apply_filters_ip(self) -> None:
+        """Test applying an IP filter."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date=None, hour=None, ip="192.168.1.2", browser=None)
+        filtered = analyzer.apply_filters(filters)
+
+        assert len(filtered) == 1
+        assert filtered[0].ip == "192.168.1.2"
+
+    def test_apply_filters_browser(self) -> None:
+        """Test applying a browser filter."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.2",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Firefox",
+                browser="Firefox",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date=None, hour=None, ip=None, browser="Firefox")
+        filtered = analyzer.apply_filters(filters)
+
+        assert len(filtered) == 1
+        assert filtered[0].browser == "Firefox"
+
+    def test_apply_filters_combined(self) -> None:
+        """Test applying multiple filters together."""
+        entries = [
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:17:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 17, 3, 16),
+                method="GET",
+                path="/",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="1024",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+            LogEntry(
+                ip="192.168.1.1",
+                timestamp="31/Jul/2025:18:03:16 -0700",
+                datetime=datetime(2025, 7, 31, 18, 3, 16),
+                method="GET",
+                path="/page",
+                protocol="HTTP/1.1",
+                status=200,
+                bytes="2048",
+                referer="",
+                user_agent="Chrome",
+                browser="Chrome",
+                source_file="test.log",
+            ),
+        ]
+
+        analyzer = LogAnalyzer(entries)
+        filters = FilterParams(date="2025-07-31", hour=17, ip="192.168.1.1", browser="Chrome")
+        filtered = analyzer.apply_filters(filters)
+
+        assert len(filtered) == 1
+        assert filtered[0].parsed_datetime.hour == 17
 
     def test_get_traffic_over_time_daily(self) -> None:
         """Test daily traffic analysis with sample data."""

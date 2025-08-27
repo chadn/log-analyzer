@@ -9,13 +9,23 @@ from .models import LogEntry
 
 logger = logging.getLogger(__name__)
 
-# Apache/Nginx common log format regex
-LOG_PATTERN = re.compile(
-    r"(?P<ip>\S+) - - \[(?P<timestamp>[^\]]+)\] "
+# Apache/Nginx common log format regex (with referer and user-agent)
+COMMON_LOG_PATTERN = re.compile(
+    r"(?P<host>\S+) - - \[(?P<timestamp>[^\]]+)\] "
     r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>[^"]+)" '
     r'(?P<status>\d+) (?P<bytes>\S+) "(?P<referer>[^"]*)" '
     r'"(?P<user_agent>[^"]*)"'
 )
+
+# Combined log format (NCSA format) - without referer and user-agent
+NCSA_LOG_PATTERN = re.compile(
+    r"(?P<host>\S+) - - \[(?P<timestamp>[^\]]+)\] "
+    r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>[^"]+)" '
+    r"(?P<status>\d+) (?P<bytes>\S+)"
+)
+
+# List of patterns to try in order
+LOG_PATTERNS = [COMMON_LOG_PATTERN, NCSA_LOG_PATTERN]
 
 
 class LogParser:
@@ -57,7 +67,7 @@ class LogParser:
         return any(ext in file_path.name.lower() for ext in ["log", "rental", "access"])
 
     def parse_log_line(self, line: str) -> LogEntry | None:
-        """Parse a single log line.
+        """Parse a single log line using multiple format patterns.
 
         Args:
             line: Raw log line
@@ -65,7 +75,15 @@ class LogParser:
         Returns:
             Parsed LogEntry or None if parsing fails
         """
-        match = LOG_PATTERN.match(line.strip())
+        stripped_line = line.strip()
+
+        # Try each pattern until one matches
+        match = None
+        for pattern in LOG_PATTERNS:
+            match = pattern.match(stripped_line)
+            if match:
+                break
+
         if not match:
             return None
 
@@ -73,17 +91,21 @@ class LogParser:
 
         # Parse timestamp
         try:
-            # Format: 31/Jul/2025:17:03:16 -0700
+            # Format: 31/Jul/2025:17:03:16 -0700 or 01/Jul/1995:00:00:01 -0400
             dt_str = data["timestamp"].split(" ")[0]  # Remove timezone for simplicity
             parsed_datetime = datetime.strptime(dt_str, "%d/%b/%Y:%H:%M:%S")
         except ValueError:
             return None
 
-        # Parse browser from user agent
-        browser = self._parse_browser(data["user_agent"])
+        # Handle optional fields (may not exist in all formats)
+        referer = data.get("referer", "-")
+        user_agent = data.get("user_agent", "-")
+
+        # Parse browser from user agent (default to "Unknown" if no user agent)
+        browser = self._parse_browser(user_agent) if user_agent != "-" else "Unknown"
 
         return LogEntry(
-            ip=data["ip"],
+            ip=data["host"],  # Can be IP address or hostname
             timestamp=data["timestamp"],
             datetime=parsed_datetime,  # Using alias for compatibility
             method=data["method"],
@@ -91,8 +113,8 @@ class LogParser:
             protocol=data["protocol"],
             status=int(data["status"]),
             bytes=data["bytes"],  # Using alias for compatibility
-            referer=data["referer"],
-            user_agent=data["user_agent"],
+            referer=referer,
+            user_agent=user_agent,
             browser=browser,
             source_file="",  # Will be set by caller
         )
