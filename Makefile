@@ -38,9 +38,10 @@ reqs: ## Generate requirements.txt from pyproject (legacy tools only)
 
 check: format lint type test ## Run all local checks
 
-ci: check ## Run checks + coverage (CI gate)
+ci: check ## Run checks + coverage + security audit (CI gate)
 	uv run coverage run -m pytest -q
 	uv run coverage report --fail-under=85
+	uv run pip-audit
 
 clean: ## Remove caches and build artifacts
 	rm -rf .pytest_cache .mypy_cache .ruff_cache .coverage dist build
