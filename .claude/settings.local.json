@@ -3,7 +3,8 @@
     "allow": [
       "Bash(python -m pip install:*)",
       "Bash(make test:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

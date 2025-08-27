@@ -25,7 +25,7 @@ fix-format: ## Auto-fix formatting
 	uv run ruff format .
 
 type: ## Type-check with mypy
-	uv run mypy . --ignore-missing-imports
+	uv run mypy .
 
 test: ## Run tests (pass extra flags via ARGS='...')
 	uv run pytest -q $(ARGS)
